@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Context &#8212; Synthetic Data Tools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Containers" href="containers.html" />
+    <link rel="prev" title="Usage" href="use.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="context">
+<h1>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h1>
+<p>The Synthetic Data tools are used to build code that creates useful data.</p>
+<p>This means that development mostly happens in an IDE, importing and extending the tool to create the desired data.</p>
+<p class="plantuml">
+<img src="_images/plantuml-d409966a6c48c65380e2ee18ca8ab997e844d88b.png" alt="left to right direction
+
+package IDE {
+    &quot;Create schema&quot; as (cs)
+    &quot;Run Benchmarks&quot; as (bench)
+    &quot;Update schema&quot; as (us)
+}
+
+package &quot;Synthetic Data&quot; {
+&quot;Create synthetic data&quot; as (csd)
+}
+
+:Designer: --&gt; (cs)
+:Designer: --&gt; (csd)
+:Designer: --&gt; (bench)
+:Designer: --&gt; (us)"/>
+</p>
+<p>The general workflow has a number of steps.</p>
+<ol class="arabic simple">
+<li><p>Create a schema using <code class="docutils literal notranslate"><span class="pre">pydantic</span></code>.</p></li>
+<li><p>Use the schema to create synthetic data.</p></li>
+<li><p>Use the synthetic data to create benchmark results of running
+real (or spike solution) software on real hardware with <em>realistic</em> data.</p></li>
+<li><p>Update the schema to create “better” data.
+Often, the distributions, and optionality settings need tweaking.
+Also, customized synthesizers may be required.</p></li>
+<li><p>Recreate the data. Rerun the benchmarks. Repeat as needed.</p></li>
+</ol>
+<p>Here’s an activity diagram:</p>
+<p class="plantuml">
+<img src="_images/plantuml-a47b739b4c9ee9990c6753e02df9af055788e002.png" alt="start
+:Create schema;
+repeat
+    :Create synthetic data;
+    :Run Benchmarks;
+    :Update schema;
+repeat while (lessons to be learned)"/>
+</p>
+<p>The “Run Benchmarks” is intentionally open-eneded.</p>
+<p>For SQL Database Design, this often means loading a database and running queries.
+It may mean running batches of concurrent queries to guage performance under load.
+It may mean spinning up server farms to run large batches of queries.
+All of this is outside the tool.
+The tool synthesizes the data for controlled, reproducible, at-scale benchmarking.</p>
+<p>The schema definition is explicitly aimed at creating a definition that’s usable by JSONSchema tools.
+See <a class="reference external" href="https://json-schema.org">https://json-schema.org</a> for more information on JSONSchema.
+The JSONSchema rules define a number of formats for string data.
+See <a class="reference external" href="https://json-schema.org/draft/2020-12/json-schema-validation#name-defined-formats">https://json-schema.org/draft/2020-12/json-schema-validation#name-defined-formats</a> for the list.</p>
+<p>Beyond these formats, JSONSchema also supports regular expression patterns to define valid string values.
+This permits additional flexibility where needed.</p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Synthetic Data Tools</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="containers.html">Containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Synthetic Data Tool Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="future.html">Future Directions</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="use.html" title="previous chapter">Usage</a></li>
+      <li>Next: <a href="containers.html" title="next chapter">Containers</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, S.Lott.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/context.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
