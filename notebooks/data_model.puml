@@ -1,0 +1,47 @@
+@startuml
+
+hide methods
+hide circle
+
+class Employee {
+    id: int
+    {field} name: string(40)
+    hire_date: timestamp
+    velocity: float
+    manager_id: int
+}
+
+class Manager {
+    manager_id: int
+    employee_id: int
+    {field} department_id: string(8)
+}
+
+class Department {
+    {field} id: string(8)
+    {field} name: string(40)
+}
+
+class Location {
+    id: int
+    {field} ZIP: string(9)
+    {field} facility_type: string(4)
+}
+
+class Space {
+    location_id: int
+    employee_id: int
+    {field} assignment_code: string(1)
+}
+
+Employee "{1,n}" *--* "{1,n}" Location
+
+Employee "{0,n}" --* Manager : Managed By
+
+Employee -- Manager : IsA
+
+Manager -- Department
+
+(Employee, Location) .. Space
+
+@enduml
