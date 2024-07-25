@@ -2,6 +2,7 @@
 Test synthdata.base classes: SynthesizeModel and SynthesizeSchema
 """
 
+import random
 from typing import Union
 from unittest.mock import Mock, MagicMock, sentinel, call
 
@@ -18,22 +19,40 @@ def seeded_random():
 
 
 def test_synth_class_iter():
-    d = dict(reversed(list(synth_class_iter())))
+    d = synth_name_map()
     keys = list(d.keys())
     # LAST
     assert keys[-1] == "Synthesizer"
-    # FIRST
-    assert keys[0] == "SynthesizeReference"
     # Specializations before Generalization
     assert keys.index("SynthesizeInteger") < keys.index("SynthesizeNumber")
     assert keys.index("SynthesizeFloat") < keys.index("SynthesizeNumber")
     assert keys.index("SynthesizeDate") < keys.index("SynthesizeNumber")
+    # Unique items, rarely subclassed.
+    assert keys[-2] == "SynthesizeUnion"
+    assert keys[-3] == "SynthesizeReference"
+    assert keys[-4] == "SynthesizeNone"
+
+
+def test_data_iter():
+    mock_base_model = Mock(return_value=sentinel.OBJECT)
+    mock_model_synth = MagicMock(
+        name="ModelSynthesizer",
+        fields={"name": Mock(name="Synthesizer", next=Mock(return_value=sentinel.VALUE))},
+        model_class=mock_base_model,
+    )
+    m = DataIter(mock_model_synth)
+
+    assert iter(m) == m
+    assert next(m) == {"name": sentinel.VALUE}
+    assert mock_base_model.mock_calls == []
+    assert repr(m) == f"DataIter({str(mock_model_synth)}, noise=0.0)"
 
 
 def test_model_iter():
     mock_base_model = Mock(return_value=sentinel.OBJECT)
     mock_model_synth = MagicMock(
-        fields={"name": [sentinel.VALUE]},
+        name="ModelSynthesizer",
+        fields={"name": Mock(name="Synthesizer", next=Mock(return_value=sentinel.VALUE))},
         model_class=mock_base_model,
     )
     m = ModelIter(mock_model_synth)
@@ -44,9 +63,23 @@ def test_model_iter():
     assert repr(m) == f"ModelIter({str(mock_model_synth)})"
 
 
+def test_optional():
+    class OptionalField(BaseModel):
+        opt_int: int | None
+
+    m = BaseModelSynthesizer(OptionalField, 12)
+
+    assert isinstance(m.fields["opt_int"], SynthesizeUnion)
+    assert m.fields["opt_int"].model == m
+    assert m.fields["opt_int"].field == OptionalField.model_fields["opt_int"]
+    assert isinstance(m.fields["opt_int"].behavior, Independent)
+
+
 def test_model_prep():
-    m = ModelSynthesizer(Employee, 12)
-    assert repr(m) == f"ModelSynthesizer({Employee}, rows=12)"
+    m = BaseModelSynthesizer(Employee, 12)
+    m._prepare()
+
+    assert repr(m) == f"BaseModelSynthesizer({Employee}, rows=12)"
     assert m.rows == 12
     assert len(m.fields) == len(Employee.model_fields)
 
@@ -82,7 +115,7 @@ def test_sql_rule():
     class WeirdKey(BaseModel):
         weird: Annotated[int, Field(json_schema_extra={"sql": {"key": "notprimary-notforeign"}})]
 
-    m = ModelSynthesizer(WeirdKey, 12)
+    m = BaseModelSynthesizer(WeirdKey, 12)
 
     assert isinstance(m.fields["weird"], SynthesizeInteger)
     assert m.fields["weird"].model == m
@@ -94,7 +127,7 @@ def test_explicit_rule_good():
     class Fussy(BaseModel):
         must_use: Annotated[str, Field(json_schema_extra={"synthesizer": "SynthesizeInteger"})]
 
-    m = ModelSynthesizer(Fussy)
+    m = BaseModelSynthesizer(Fussy)
 
     assert isinstance(m.fields["must_use"], SynthesizeInteger)
     assert m.fields["must_use"].model == m
@@ -107,31 +140,35 @@ def test_explicit_rule_unknown():
         must_use: Annotated[str, Field(json_schema_extra={"synthesizer": "Invalid"})]
 
     with pytest.raises(KeyError) as exc_info:
-        m = ModelSynthesizer(Fussy)
+        m = BaseModelSynthesizer(Fussy)
         assert exc_info.value.args == ("Invalid",)
 
 
-def test_match_rule_failure():
+def test_alternatives():
     class OverTheTop(BaseModel):
-        unknown: Union[int, str]
+        alt: Union[int, str]
 
-    with pytest.raises(TypeError) as exc_info:
-        m = ModelSynthesizer(OverTheTop)
-        assert exc_info.value.args == ("Invalid",)
+    m = BaseModelSynthesizer(OverTheTop, 12)
+
+    assert isinstance(m.fields["alt"], SynthesizeUnion)
+    assert m.fields["alt"].model == m
+    assert m.fields["alt"].field == OverTheTop.model_fields["alt"]
+    assert isinstance(m.fields["alt"].behavior, Independent)
 
 
 def test_model_data(seeded_random):
     mock_manager_id = MagicMock(__next__=Mock(side_effect=[42]))
-    m = ModelSynthesizer(Employee, 12)
+    m = BaseModelSynthesizer(Employee, 12)
+    m._prepare()
     m.fields["manager"].source = mock_manager_id
 
     row = next(iter(m))
     assert row == Employee(
-        id=2746317213,
-        name="Zcudihyfjsonxkmtecq",
-        hire_date=datetime.datetime(2039, 1, 15, 16, 11, 32, 65844),
-        velocity=10.256638902448898,
-        manager=42,
+        id=1625792787,
+        name="Osjoruxxdoczuzrenktu",
+        hire_date=datetime.datetime(2037, 11, 1, 15, 10, 35, 703425, tzinfo=datetime.timezone.utc),
+        velocity=11.463785114761471,
+        manager=1,
     )
 
 
@@ -150,18 +187,44 @@ def test_schema(seeded_random):
 
     e_0 = next(employee_iter)
     assert e_0 == Employee(
-        id=2340505846,
-        name="Zcudihyfjsonxkmtecq",
-        hire_date=datetime.datetime(2039, 1, 15, 16, 11, 32, 65844),
-        velocity=10.256638902448898,
+        id=2479708607,
+        name="Iupkdyrosjoru",
+        hire_date=datetime.datetime(2087, 8, 4, 19, 28, 16, 659266, tzinfo=datetime.timezone.utc),
+        velocity=13.44483045681685,
         manager=398340369,
     )
 
     manager_iter = s.rows(Manager)
     m_0 = next(manager_iter)
     print(m_0)
-    assert m_0 == Manager(
-        id=398340369,
-        employee_id=958682846,
-        department_id="D[rO5PN",
+    assert m_0 == Manager(id=3224995600, employee_id=284277889, department_id="5[!}}Ba")
+
+
+def test_noisy_dataiter(seeded_random):
+    mock_model = Mock(
+        fields={
+            "f1": Mock(
+                noise_gen=Mock(return_value=sentinel.NOISE1),
+                next=Mock(return_value=sentinel.VALUE1),
+            ),
+            "f2": Mock(
+                noise_gen=Mock(return_value=sentinel.NOISE2),
+                next=Mock(return_value=sentinel.VALUE2),
+            ),
+        },
+        rows=2,
     )
+    di = DataIter(mock_model, noise=0.5)
+    rows = list(next(di) for _ in range(10))
+    assert rows == [
+        {"f1": sentinel.VALUE1, "f2": sentinel.NOISE2},
+        {"f1": sentinel.NOISE1, "f2": sentinel.NOISE2},
+        {"f1": sentinel.VALUE1, "f2": sentinel.VALUE2},
+        {"f1": sentinel.VALUE1, "f2": sentinel.NOISE2},
+        {"f1": sentinel.NOISE1, "f2": sentinel.NOISE2},
+        {"f1": sentinel.NOISE1, "f2": sentinel.VALUE2},
+        {"f1": sentinel.NOISE1, "f2": sentinel.NOISE2},
+        {"f1": sentinel.VALUE1, "f2": sentinel.VALUE2},
+        {"f1": sentinel.NOISE1, "f2": sentinel.VALUE2},
+        {"f1": sentinel.VALUE1, "f2": sentinel.NOISE2},
+    ]

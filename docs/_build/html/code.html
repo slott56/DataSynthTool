@@ -133,7 +133,7 @@ Starting with the imports</p>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">n</span><span class="si">:</span><span class="s2">24</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">match</span><span class="o">.</span><span class="vm">__doc__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <a class="reference internal" href="components.html#synthdata.base.synth_class_iter" title="synthdata.base.synth_class_iter"><code class="xref py py-func docutils literal notranslate"><span class="pre">synthdata.base.synth_class_iter()</span></code></a> emits a sequence of (name, class) pairs.
+<p>The <code class="xref py py-func docutils literal notranslate"><span class="pre">synthdata.base.synth_class_iter()</span></code> emits a sequence of (name, class) pairs.
 Generally, if the class lacks a docstring on the <code class="xref py py-meth docutils literal notranslate"><span class="pre">synthdata.base.Synthesizer.match`()</span></code> method, it means the class is abstract.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">s</span> <span class="o">=</span> <span class="n">SchemaSynthesizer</span><span class="p">()</span>
     <span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Employee</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
@@ -143,25 +143,25 @@ Generally, if the class lacks a docstring on the <code class="xref py py-meth do
 <p>The schema, <code class="docutils literal notranslate"><span class="pre">s</span></code>, is populated with two classes.
 This will build <a class="reference internal" href="components.html#synthdata.base.ModelSynthesizer" title="synthdata.base.ModelSynthesizer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">synthdata.base.ModelSynthesizer()</span></code></a> instances for each class.
 Any pooled synthesizers will be used to fill the needed PK pools.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/employee.csv&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+        <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/employee.csv&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span>
         <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span>
             <span class="n">output</span><span class="p">,</span>
             <span class="n">fieldnames</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">Employee</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">rows</span><span class="p">(</span><span class="n">Employee</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
 </pre></div>
 </div>
 <p>This writes <code class="docutils literal notranslate"><span class="pre">Employee</span></code> instances to both the console and a file.
 The <code class="docutils literal notranslate"><span class="pre">csv</span></code> module’s <code class="docutils literal notranslate"><span class="pre">DictWriter</span></code> class is initialized with the field names from the <code class="docutils literal notranslate"><span class="pre">Employee</span></code> class.
 Then each object’s <code class="docutils literal notranslate"><span class="pre">dict()</span></code> result is used to write a row to the file.</p>
 <p>Note that only key values are pooled. The <code class="docutils literal notranslate"><span class="pre">Employee</span></code> instances are built as needed from the key pool.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/manager.csv&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span>
-        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span>
-            <span class="n">output</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">Manager</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="p">)</span>
-        <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">rows</span><span class="p">(</span><span class="n">Manager</span><span class="p">)))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+        <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/manager.csv&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span>
 </pre></div>
 </div>
 <p>This writes <code class="docutils literal notranslate"><span class="pre">Manager</span></code> instances to a file.
@@ -178,7 +178,7 @@ For some more nuanced database query design issues, a more complicated weighted 
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">Synthetic Data Tools</a></h1>
 
@@ -240,7 +240,7 @@ For some more nuanced database query design issues, a more complicated weighted 
       &#169;2024, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

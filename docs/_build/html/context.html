@@ -34,8 +34,15 @@
             
   <section id="context">
 <h1>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h1>
-<p>The Synthetic Data tools are used to build code that creates useful data.</p>
-<p>This means that development mostly happens in an IDE, importing and extending the tool to create the desired data.</p>
+<p>The Synthetic Data tools are used to build code that creates useful data.
+The goal is to create large volumes of data that generally match detailed schema specifications.</p>
+<p>Additionally, invalid values can be injected to create examples of low-quality data.</p>
+<p>We’ll start with the conventional use case of valid data.</p>
+<section id="creating-valid-data">
+<h2>Creating Valid Data<a class="headerlink" href="#creating-valid-data" title="Link to this heading">¶</a></h2>
+<p>The valid data is written by an application that leverages the Data Synth tool.
+Development mostly happens in an IDE, importing and extending the tool.
+The resulting application creates the data.</p>
 <p class="plantuml">
 <img src="_images/plantuml-d409966a6c48c65380e2ee18ca8ab997e844d88b.png" alt="left to right direction
 
@@ -56,13 +63,17 @@ package &quot;Synthetic Data&quot; {
 </p>
 <p>The general workflow has a number of steps.</p>
 <ol class="arabic simple">
-<li><p>Create a schema using <code class="docutils literal notranslate"><span class="pre">pydantic</span></code>.</p></li>
+<li><p>Create a very detailed schema using <code class="docutils literal notranslate"><span class="pre">pydantic</span></code>.
+This will include details beyond those conventionally used for validation.
+For example, a distribution shape (uniform, normal, exponential, Benford, etc.) may also be needed.</p></li>
 <li><p>Use the schema to create synthetic data.</p></li>
 <li><p>Use the synthetic data to create benchmark results of running
 real (or spike solution) software on real hardware with <em>realistic</em> data.</p></li>
 <li><p>Update the schema to create “better” data.
 Often, the distributions, and optionality settings need tweaking.
-Also, customized synthesizers may be required.</p></li>
+Also, customized synthesizers may be required.
+As more is learned about the algorithms, the problem domain, and the user stories,
+more sophisticated data is required.</p></li>
 <li><p>Recreate the data. Rerun the benchmarks. Repeat as needed.</p></li>
 </ol>
 <p>Here’s an activity diagram:</p>
@@ -87,6 +98,30 @@ The JSONSchema rules define a number of formats for string data.
 See <a class="reference external" href="https://json-schema.org/draft/2020-12/json-schema-validation#name-defined-formats">https://json-schema.org/draft/2020-12/json-schema-validation#name-defined-formats</a> for the list.</p>
 <p>Beyond these formats, JSONSchema also supports regular expression patterns to define valid string values.
 This permits additional flexibility where needed.</p>
+<p>The other common use case creates noisy, invalid or faulty data.</p>
+</section>
+<section id="creating-noisy-data">
+<h2>Creating Noisy Data<a class="headerlink" href="#creating-noisy-data" title="Link to this heading">¶</a></h2>
+<p>There are several tiers of noise:</p>
+<ol class="arabic simple">
+<li><p>The values are of the expected type and in the expected domain, but an unexpected distribution.</p></li>
+<li><p>The values are of the expected type, but are outside the expected domain.</p></li>
+<li><p>The values are not of the expected type.</p></li>
+<li><p>The values do not fit the expected logical layout. This may mean a CSV file with extra or missing columns.
+It may mean a NDJSON file with unexpected fields.</p></li>
+<li><p>The source files do not fit the expected physical format.
+For example, a CSV file has invalid or inconsistent comma and quote use.
+Or, a file that expected JSON documents contains a document not in JSON format.</p></li>
+</ol>
+<p>This application deals with the first three tiers of invalid data.</p>
+<p>Generally, a noise threshold is set. For some kinds of bulk performance testing, it might be
+a low 5% to assure 1 field value in 20 has invalid data.
+For a record with 20 fields, almost every record will have an error.
+A few will have multiple errors, a few will be error free.</p>
+<p>For more complex documents with more fields, a lower noise threshold makes sense.
+For shorter documents with fewer fields, a higher noise threshold assures a useful mix
+of bad data.</p>
+</section>
 </section>
 
 
@@ -94,7 +129,7 @@ This permits additional flexibility where needed.</p>
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">Synthetic Data Tools</a></h1>
 
@@ -110,7 +145,11 @@ This permits additional flexibility where needed.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="use.html">Usage</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Context</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Context</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-valid-data">Creating Valid Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-noisy-data">Creating Noisy Data</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="containers.html">Containers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">Synthetic Data Tool Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
@@ -152,7 +191,7 @@ This permits additional flexibility where needed.</p>
       &#169;2024, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

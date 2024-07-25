@@ -1,8 +1,13 @@
 [project]
-name = "Synthetic Data Tools"
-description = "Data Synthesizer"
+name = "DataSynthTool"
+description = "Synthetic Data Tools"
 readme = "README.rst"
 requires-python = ">=3.12"
+version = "0.1.0"
+
+[tools.setuptools]
+package_dir = {"" = "src"}
+packages = ["synthdata"]
 
 [build-system]
 requires = ["setuptools"]

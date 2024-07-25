@@ -44,7 +44,7 @@
 <li><p>A domain-indepedent null is the SQL <code class="docutils literal notranslate"><span class="pre">NULL</span></code> or Python <code class="docutils literal notranslate"><span class="pre">None</span></code> value.
 This can be done with a JSONSchema <code class="docutils literal notranslate"><span class="pre">oneOf</span></code> and a <code class="docutils literal notranslate"><span class="pre">json_schema_extra</span></code> to provide probability of a <code class="docutils literal notranslate"><span class="pre">null</span></code>.</p>
 <p>More generally, it requires a <code class="docutils literal notranslate"><span class="pre">oneOf</span></code> with probabilities for each alternative.
-This leads to a <code class="docutils literal notranslate"><span class="pre">Union[Annnotated[int,</span> <span class="pre">...],</span> <span class="pre">Annotated[None,</span> <span class="pre">...],</span> <span class="pre">etc.]</span></code> with probabilities for each choice.</p>
+This leads to a <code class="docutils literal notranslate"><span class="pre">Annnotated[Union[int,</span> <span class="pre">None,</span> <span class="pre">...],</span> <span class="pre">etc.]</span></code> with probabilities for the two alternatives.</p>
 </li>
 <li><p>A domain-specific null is a coded value, like social security number <code class="docutils literal notranslate"><span class="pre">999-99-9999</span></code> that indicates some sort of missing or not-applicable value.
 This is also a complicated <code class="docutils literal notranslate"><span class="pre">Union</span></code>.
@@ -59,7 +59,7 @@ This leads to a <code class="docutils literal notranslate"><span class="pre">Uni
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">Synthetic Data Tools</a></h1>
 
@@ -116,7 +116,7 @@ This leads to a <code class="docutils literal notranslate"><span class="pre">Uni
       &#169;2024, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

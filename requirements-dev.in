@@ -1,0 +1,5 @@
+jupyterlab
+sphinx
+sphinxcontrib-plantuml
+-r requirements-test.in
+-r requirements.in

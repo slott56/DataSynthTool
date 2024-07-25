@@ -20,6 +20,7 @@ extensions = [
     "sphinxcontrib.plantuml",
     "sphinx.ext.mathjax",
     "sphinx.ext.autodoc",
+    "sphinx.ext.todo",
 ]
 
 templates_path = ["_templates"]

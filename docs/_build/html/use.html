@@ -34,15 +34,19 @@
             
   <section id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h1>
-<p>See <a class="reference internal" href="code.html#code"><span class="std std-ref">Code</span></a> for an example application.</p>
+<p>See <a class="reference internal" href="code.html#code"><span class="std std-ref">Code</span></a> for an example application to generate valid data.</p>
 <p>The essence is this:</p>
 <ol class="arabic simple">
 <li><p>Define the applciation model using Pydantic.</p></li>
+<li><p>Add details beyond the typical validation cases.
+This often means adding a distribution information in addition to valid choices or numeric ranges.</p></li>
 <li><p>Use the <code class="xref py py-class docutils literal notranslate"><span class="pre">syntdata.base.SynthesizeModel</span></code> for a single <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>.
 Use <code class="xref py py-class docutils literal notranslate"><span class="pre">syntdata.base.SynthesizeSchema</span></code> for a schema with multiple, related <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>.</p></li>
 <li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">syntdata.base.SynthesizeModel</span></code> is an Iterator over <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> objects.
 The <code class="xref py py-class docutils literal notranslate"><span class="pre">syntdata.base.SynthesizeSchema</span></code> can emit Iterators over <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> objects for each model in the schema.</p></li>
-<li><p>Serialize the objects.</p></li>
+<li><p>Serialize the objects.
+For noise-free, clean data, a model iterator produces Pydantic <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.BaseModel</span></code> instances.
+For noisy data, a data iterator produces dictionaries that may raise an exception when used to created a py:class:<cite>pydantic.BaseModel</cite> instance.</p></li>
 </ol>
 </section>
 
@@ -51,7 +55,7 @@ The <code class="xref py py-class docutils literal notranslate"><span class="pre
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">Synthetic Data Tools</a></h1>
 
@@ -109,7 +113,7 @@ The <code class="xref py py-class docutils literal notranslate"><span class="pre
       &#169;2024, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

@@ -185,21 +185,21 @@ It looks like this:
 
 ..  uml::
 
-    class SynthesizeSchema
+    class SchemaSynth
 
-    class SynthesizeModel
+    class ModelSynth
 
     class pydantic.BaseModel
 
     class pydantic.Field
 
-    SynthesizeSchema o-- "{1, m}" SynthesizeModel : "Contains"
+    SchemaSynth o-- "{1, m}" ModelSynth : "Contains"
 
-    SynthesizeModel -- pydantic.BaseModel : "Based on"
+    ModelSynth -- pydantic.BaseModel : "Based on"
 
     pydantic.BaseModel *- pydantic.Field
 
-What's essential is the way a ``SynthesizerModel`` depends on an underlying Pydantic ``BaseModel``.
+What's essential is the way a ``ModelSynth`` depends on an underlying Pydantic ``BaseModel``.
 The Synthetic Data Tools rely on the rich set of type annotations in Pydantic.
 These are used to validate the output from Synthesizers, assuring the data is valid.
 This also makes Pydantic's rich set of serialization options available, permitting easy creation of newline-delimited JSON and CSV.
@@ -208,7 +208,6 @@ Further -- with some care -- the Pydantic model can be mapped against a separate
 Here's an example data model.
 
 ..  uml::
-
 
     hide methods
     hide circle
@@ -271,3 +270,227 @@ The SQL "cardinality" of the relationship is defined by the number of rows in ea
 If the median cardinality is 5 employees per manager, then, the employee table must have 5 times as many rows as the manager table.
 
 The ``Manager`` table avoids introducing anything new.
+
+Class Collaboration
+=============================================
+
+A ``SchemaSynth`` is a collection of ``ModelSynth`` instances.
+As shown above, in `Schema Definition`_, the ``ModelSynth`` is associated with the Pydantic ``BaseModel``.
+
+For each field in the ``BaseModel``, the ``ModelSynth`` contains a ``Synthesizer`` instance for each field.
+
+A ``Synthesizer`` has one of two behaviors: ``Independent`` or ``Pooled``.
+
+When the client wants data objects (that may have noise) or model objects (that cannot have noise)
+it will create a ``DataIter`` or ``ModelIter`` object to emit synthetic data.
+
+The following diagram provides some details of the relationships:
+
+..  uml::
+
+    abstract class Behavior
+
+    class Independent {
+        prepare()
+    }
+
+    class Pooled {
+        prepare()
+    }
+
+    class Synthesizer {
+        model: Model
+        field: Field
+        behavior: Behavior
+        noise: float
+        __init__(Model, Field, Behavior)
+        prepare()
+        value_gen()
+        noise_gen()
+    }
+
+    class ModelSynth {
+        model: Model
+        __init__(Model)
+        data_iter()
+        model_iter()
+    }
+
+    class SchemaSynth {
+        add(Model)
+    }
+
+    class ModelIter {
+        __init__(ModelSynth)
+        iterator(noise=0)
+        next() : Model
+    }
+    class DataIter {
+        __init__(ModelSynth)
+        iterator(noise)
+        next() : dict[str, Any]
+    }
+
+    SchemaSynth o-- "1:m" ModelSynth : Contains
+
+    ModelSynth *-- "1:m" Synthesizer : Contains
+
+    Synthesizer -- Behavior : Strategy
+
+    Behavior <|-- Independent
+    Behavior <|--Pooled
+
+    ModelSynth --> DataIter : creates
+    ModelSynth --> ModelIter : creates
+    DataIter <-- ModelIter : uses
+    DataIter --> ModelSynth : uses
+
+    ModelIter --> Model : Creates Synthetic Instances
+    DataIter --> dict : Creates Synthetic Candidates
+
+    class "dict[str, Any]" as dict {
+        str
+        Any
+    }
+
+The first step in the processing seeks to locate appropriate ``Synthesizer`` for each field.
+This is a class-level search using a class-level ``match()`` method of each ``Synthesizer`` class.
+The first match (working from the bottom to the top of the hierarchy) is then used for the field.
+
+..  uml::
+
+    participant client
+
+    client -> SchemaSynth: add(Model)
+    SchemaSynth -> ModelSynth : ~__init__(model)
+    loop all fields
+        loop all synth subclasses
+            ModelSynth -> Synthesizer : //match()//
+            Synthesizer --> ModelSynth : synth class, behavior class
+        end
+        ModelSynth -> Synthesizer : ~__init__(field, behavior class)
+    end
+
+The second step is an initialization of the ``Behavior`` by the ``Synthesizer``.
+There are two cases, defined by the ``Behavior`` class hierarchy:
+
+-   **Independent**. These ``Synthesizers`` are lazy and generate values as needed. The behavior's ``next()``
+    method is used to create individual field values from a Synthesizer.
+
+    ..  uml::
+
+        participant client
+        participant ModelSynth
+        participant DataIter
+        participant Synthesizer
+        participant Independent
+
+        group ~__init__()
+            ModelSynth -> Synthesizer : ~__init__(self)
+            Synthesizer -> Independent : ~__init__(self)
+        end
+
+        client -> ModelSynth : data_iter(noise)
+        ModelSynth -> DataIter : ~__init__(self, noise)
+        loop all fields
+            ModelSynth -> Synthesizer : prepare()
+            Synthesizer -> Independent : prepare()
+        end
+        ModelSynth --> client : DataIter instance
+
+        loop rows
+            client -> DataIter : next()
+            loop all fields
+                DataIter -> Synthesizer : next()
+                Synthesizer -> Independent : next()
+                Independent -> Synthesizer : value_gen()
+                Synthesizer --> Independent : Any
+                Independent --> Synthesizer : Any
+                Synthesizer --> DataIter : Any
+                alt noisee?
+                    DataIter -> Synthesizer : noise_gen()
+                    Synthesizer --> DataIter : noise
+                end
+            end
+            DataIter --> client : dict[str, Any | noise]
+        end
+
+-   **Pooled**. These ``Synthesizers`` must initialize a pool of unique values.
+    The vaues are consumed to create primary and foreign keys.
+    For PK's the ``next()`` method steps through the collection of unique key values.
+    The FK's work via a ``choose()`` method, permitting reuse of primary key values.
+
+    ..  uml::
+
+        participant client
+        participant ModelSynth
+        participant DataIter
+        participant Synthesizer
+        participant Pooled
+
+        group ~__init__()
+            ModelSynth -> Synthesizer : ~__init__(self)
+            Synthesizer -> Pooled : ~__init__(self)
+        end
+
+        client -> ModelSynth : data_iter(noise)
+        ModelSynth -> DataIter : ~__init__(self, noise)
+        loop all fields
+            ModelSynth -> Synthesizer : prepare()
+            Synthesizer -> Pooled : prepare()
+            loop all rows in pool
+                Pooled -> Synthesizer : value_gen()
+                Synthesizer --> Pooled : Any
+                Pooled -> pool : append()
+            end
+        end
+        ModelSynth --> client : DataIter instance
+
+        loop rows
+            client -> DataIter : next()
+            loop all fields
+                DataIter -> Synthesizer : next()
+                Synthesizer -> Pooled : next()
+                alt PK case
+                    Pooled -> pool : ~__next__()
+                    pool --> Pooled : Any
+                    Pooled --> Synthesizer : Any
+                    Synthesizer --> DataIter : Any
+                else FK case
+                    Pooled -> pool : random.choice()
+                    pool --> Pooled : Any
+                    Pooled --> Synthesizer : Any
+                    Synthesizer --> DataIter : Any
+                    alt noisee?
+                        DataIter -> Synthesizer : noise_gen()
+                        Synthesizer --> DataIter : noise
+                    end
+                end
+            end
+            DataIter --> client : dict[str, Any | noise]
+        end
+
+The the `Data Generator App`_ section for the sequence
+of operations the client uses.
+Here's the summary:
+
+1.  Create a ``SchemaSynth`` full of ``ModelSynth`` instances.
+    This will prepare each ``ModelSynth``.
+    For ``Pooled`` synthesizers, this will initialize the pool.
+
+2.  Use the ``data_iter()`` (or ``model_iter()``) to initialize
+    an iterator over ``dict[str, Any]`` or ``Model`` instances.
+    Since the ``ModelIter`` depends on the ``DataIter``, the ``DataIter`` collaboration is foundational.
+
+    The noise parameter -- if present -- is saved to replace valid values with noise.
+
+3.  Use the ``next()`` method to get a a next ``dict[str, Any]``
+    (which can be used to creaete a ``Model`` instance.)
+
+    -   For Independent, the value is generated as needed.
+
+    -   For Pooled, the sequence of PK's comes from the pool.
+        The FK references are chosen randomly from the pool.
+
+    Noise is injected by the DataIter if the ``noise`` threshold
+    is non-zero.

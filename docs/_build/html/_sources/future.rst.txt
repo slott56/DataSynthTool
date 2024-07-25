@@ -19,7 +19,7 @@ See :ref:`containers.model` for a list of features.
         This can be done with a JSONSchema ``oneOf`` and a ``json_schema_extra`` to provide probability of a ``null``.
 
         More generally, it requires a ``oneOf`` with probabilities for each alternative.
-        This leads to a ``Union[Annnotated[int, ...], Annotated[None, ...], etc.]`` with probabilities for each choice.
+        This leads to a ``Annnotated[Union[int, None, ...], etc.]`` with probabilities for the two alternatives.
 
     -   A domain-specific null is a coded value, like social security number ``999-99-9999`` that indicates some sort of missing or not-applicable value.
         This is also a complicated ``Union``.

@@ -183,21 +183,21 @@ Some tables have foreign keys that are primary keys on other tables.
 The schema is a collection of model definitions, allowing the cross-references to work.</p>
 <p>It looks like this:</p>
 <p class="plantuml">
-<img src="_images/plantuml-a92df15a7ea9f37b93aa4c58bcbd93d9140cfd2a.png" alt="class SynthesizeSchema
+<img src="_images/plantuml-2bdd30e026fb4898c1be59af75d33f9047de1ef4.png" alt="class SchemaSynth
 
-class SynthesizeModel
+class ModelSynth
 
 class pydantic.BaseModel
 
 class pydantic.Field
 
-SynthesizeSchema o-- &quot;{1, m}&quot; SynthesizeModel : &quot;Contains&quot;
+SchemaSynth o-- &quot;{1, m}&quot; ModelSynth : &quot;Contains&quot;
 
-SynthesizeModel -- pydantic.BaseModel : &quot;Based on&quot;
+ModelSynth -- pydantic.BaseModel : &quot;Based on&quot;
 
 pydantic.BaseModel *- pydantic.Field"/>
 </p>
-<p>What’s essential is the way a <code class="docutils literal notranslate"><span class="pre">SynthesizerModel</span></code> depends on an underlying Pydantic <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>.
+<p>What’s essential is the way a <code class="docutils literal notranslate"><span class="pre">ModelSynth</span></code> depends on an underlying Pydantic <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>.
 The Synthetic Data Tools rely on the rich set of type annotations in Pydantic.
 These are used to validate the output from Synthesizers, assuring the data is valid.
 This also makes Pydantic’s rich set of serialization options available, permitting easy creation of newline-delimited JSON and CSV.
@@ -320,6 +320,219 @@ The SQL “cardinality” of the relationship is defined by the number of rows i
 If the median cardinality is 5 employees per manager, then, the employee table must have 5 times as many rows as the manager table.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Manager</span></code> table avoids introducing anything new.</p>
 </section>
+<section id="class-collaboration">
+<h2>Class Collaboration<a class="headerlink" href="#class-collaboration" title="Link to this heading">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">SchemaSynth</span></code> is a collection of <code class="docutils literal notranslate"><span class="pre">ModelSynth</span></code> instances.
+As shown above, in <a class="reference internal" href="#schema-definition">Schema Definition</a>, the <code class="docutils literal notranslate"><span class="pre">ModelSynth</span></code> is associated with the Pydantic <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>.</p>
+<p>For each field in the <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>, the <code class="docutils literal notranslate"><span class="pre">ModelSynth</span></code> contains a <code class="docutils literal notranslate"><span class="pre">Synthesizer</span></code> instance for each field.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Synthesizer</span></code> has one of two behaviors: <code class="docutils literal notranslate"><span class="pre">Independent</span></code> or <code class="docutils literal notranslate"><span class="pre">Pooled</span></code>.</p>
+<p>When the client wants data objects (that may have noise) or model objects (that cannot have noise)
+it will create a <code class="docutils literal notranslate"><span class="pre">DataIter</span></code> or <code class="docutils literal notranslate"><span class="pre">ModelIter</span></code> object to emit synthetic data.</p>
+<p>The following diagram provides some details of the relationships:</p>
+<p class="plantuml">
+<img src="_images/plantuml-cf6127fc8f472d3742f9b9b32ce47deb7d8f031a.png" alt="abstract class Behavior
+
+class Independent {
+    prepare()
+}
+
+class Pooled {
+    prepare()
+}
+
+class Synthesizer {
+    model: Model
+    field: Field
+    behavior: Behavior
+    noise: float
+    __init__(Model, Field, Behavior)
+    prepare()
+    value_gen()
+    noise_gen()
+}
+
+class ModelSynth {
+    model: Model
+    __init__(Model)
+    data_iter()
+    model_iter()
+}
+
+class SchemaSynth {
+    add(Model)
+}
+
+class ModelIter {
+    __init__(ModelSynth)
+    iterator(noise=0)
+    next() : Model
+}
+class DataIter {
+    __init__(ModelSynth)
+    iterator(noise)
+    next() : dict[str, Any]
+}
+
+SchemaSynth o-- &quot;1:m&quot; ModelSynth : Contains
+
+ModelSynth *-- &quot;1:m&quot; Synthesizer : Contains
+
+Synthesizer -- Behavior : Strategy
+
+Behavior &lt;|-- Independent
+Behavior &lt;|--Pooled
+
+ModelSynth --&gt; DataIter : creates
+ModelSynth --&gt; ModelIter : creates
+DataIter &lt;-- ModelIter : uses
+DataIter --&gt; ModelSynth : uses
+
+ModelIter --&gt; Model : Creates Synthetic Instances
+DataIter --&gt; dict : Creates Synthetic Candidates
+
+class &quot;dict[str, Any]&quot; as dict {
+    str
+    Any
+}"/>
+</p>
+<p>The first step in the processing seeks to locate appropriate <code class="docutils literal notranslate"><span class="pre">Synthesizer</span></code> for each field.
+This is a class-level search using a class-level <code class="docutils literal notranslate"><span class="pre">match()</span></code> method of each <code class="docutils literal notranslate"><span class="pre">Synthesizer</span></code> class.
+The first match (working from the bottom to the top of the hierarchy) is then used for the field.</p>
+<p class="plantuml">
+<img src="_images/plantuml-f7e4ae617dc4f20b54b7e5d3aa3975cddd8c2dea.png" alt="participant client
+
+client -&gt; SchemaSynth: add(Model)
+SchemaSynth -&gt; ModelSynth : ~__init__(model)
+loop all fields
+    loop all synth subclasses
+        ModelSynth -&gt; Synthesizer : //match()//
+        Synthesizer --&gt; ModelSynth : synth class, behavior class
+    end
+    ModelSynth -&gt; Synthesizer : ~__init__(field, behavior class)
+end"/>
+</p>
+<p>The second step is an initialization of the <code class="docutils literal notranslate"><span class="pre">Behavior</span></code> by the <code class="docutils literal notranslate"><span class="pre">Synthesizer</span></code>.
+There are two cases, defined by the <code class="docutils literal notranslate"><span class="pre">Behavior</span></code> class hierarchy:</p>
+<ul>
+<li><p><strong>Independent</strong>. These <code class="docutils literal notranslate"><span class="pre">Synthesizers</span></code> are lazy and generate values as needed. The behavior’s <code class="docutils literal notranslate"><span class="pre">next()</span></code>
+method is used to create individual field values from a Synthesizer.</p>
+<p class="plantuml">
+<img src="_images/plantuml-78fb4d14cb1f11088df8bce7ae3818f6946f0a85.png" alt="participant client
+participant ModelSynth
+participant DataIter
+participant Synthesizer
+participant Independent
+
+group ~__init__()
+    ModelSynth -&gt; Synthesizer : ~__init__(self)
+    Synthesizer -&gt; Independent : ~__init__(self)
+end
+
+client -&gt; ModelSynth : data_iter(noise)
+ModelSynth -&gt; DataIter : ~__init__(self, noise)
+loop all fields
+    ModelSynth -&gt; Synthesizer : prepare()
+    Synthesizer -&gt; Independent : prepare()
+end
+ModelSynth --&gt; client : DataIter instance
+
+loop rows
+    client -&gt; DataIter : next()
+    loop all fields
+        DataIter -&gt; Synthesizer : next()
+        Synthesizer -&gt; Independent : next()
+        Independent -&gt; Synthesizer : value_gen()
+        Synthesizer --&gt; Independent : Any
+        Independent --&gt; Synthesizer : Any
+        Synthesizer --&gt; DataIter : Any
+        alt noisee?
+            DataIter -&gt; Synthesizer : noise_gen()
+            Synthesizer --&gt; DataIter : noise
+        end
+    end
+    DataIter --&gt; client : dict[str, Any | noise]
+end"/>
+</p>
+</li>
+<li><p><strong>Pooled</strong>. These <code class="docutils literal notranslate"><span class="pre">Synthesizers</span></code> must initialize a pool of unique values.
+The vaues are consumed to create primary and foreign keys.
+For PK’s the <code class="docutils literal notranslate"><span class="pre">next()</span></code> method steps through the collection of unique key values.
+The FK’s work via a <code class="docutils literal notranslate"><span class="pre">choose()</span></code> method, permitting reuse of primary key values.</p>
+<p class="plantuml">
+<img src="_images/plantuml-eaa8003b9fa88db3e107a197c0f82feca1a2840f.png" alt="participant client
+participant ModelSynth
+participant DataIter
+participant Synthesizer
+participant Pooled
+
+group ~__init__()
+    ModelSynth -&gt; Synthesizer : ~__init__(self)
+    Synthesizer -&gt; Pooled : ~__init__(self)
+end
+
+client -&gt; ModelSynth : data_iter(noise)
+ModelSynth -&gt; DataIter : ~__init__(self, noise)
+loop all fields
+    ModelSynth -&gt; Synthesizer : prepare()
+    Synthesizer -&gt; Pooled : prepare()
+    loop all rows in pool
+        Pooled -&gt; Synthesizer : value_gen()
+        Synthesizer --&gt; Pooled : Any
+        Pooled -&gt; pool : append()
+    end
+end
+ModelSynth --&gt; client : DataIter instance
+
+loop rows
+    client -&gt; DataIter : next()
+    loop all fields
+        DataIter -&gt; Synthesizer : next()
+        Synthesizer -&gt; Pooled : next()
+        alt PK case
+            Pooled -&gt; pool : ~__next__()
+            pool --&gt; Pooled : Any
+            Pooled --&gt; Synthesizer : Any
+            Synthesizer --&gt; DataIter : Any
+        else FK case
+            Pooled -&gt; pool : random.choice()
+            pool --&gt; Pooled : Any
+            Pooled --&gt; Synthesizer : Any
+            Synthesizer --&gt; DataIter : Any
+            alt noisee?
+                DataIter -&gt; Synthesizer : noise_gen()
+                Synthesizer --&gt; DataIter : noise
+            end
+        end
+    end
+    DataIter --&gt; client : dict[str, Any | noise]
+end"/>
+</p>
+</li>
+</ul>
+<p>The the <a class="reference internal" href="#data-generator-app">Data Generator App</a> section for the sequence
+of operations the client uses.
+Here’s the summary:</p>
+<ol class="arabic">
+<li><p>Create a <code class="docutils literal notranslate"><span class="pre">SchemaSynth</span></code> full of <code class="docutils literal notranslate"><span class="pre">ModelSynth</span></code> instances.
+This will prepare each <code class="docutils literal notranslate"><span class="pre">ModelSynth</span></code>.
+For <code class="docutils literal notranslate"><span class="pre">Pooled</span></code> synthesizers, this will initialize the pool.</p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">data_iter()</span></code> (or <code class="docutils literal notranslate"><span class="pre">model_iter()</span></code>) to initialize
+an iterator over <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">Any]</span></code> or <code class="docutils literal notranslate"><span class="pre">Model</span></code> instances.
+Since the <code class="docutils literal notranslate"><span class="pre">ModelIter</span></code> depends on the <code class="docutils literal notranslate"><span class="pre">DataIter</span></code>, the <code class="docutils literal notranslate"><span class="pre">DataIter</span></code> collaboration is foundational.</p>
+<p>The noise parameter – if present – is saved to replace valid values with noise.</p>
+</li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">next()</span></code> method to get a a next <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">Any]</span></code>
+(which can be used to creaete a <code class="docutils literal notranslate"><span class="pre">Model</span></code> instance.)</p>
+<ul class="simple">
+<li><p>For Independent, the value is generated as needed.</p></li>
+<li><p>For Pooled, the sequence of PK’s comes from the pool.
+The FK references are chosen randomly from the pool.</p></li>
+</ul>
+<p>Noise is injected by the DataIter if the <code class="docutils literal notranslate"><span class="pre">noise</span></code> threshold
+is non-zero.</p>
+</li>
+</ol>
+</section>
 </section>
 
 
@@ -327,7 +540,7 @@ If the median cardinality is 5 employees per manager, then, the employee table m
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">Synthetic Data Tools</a></h1>
 
@@ -348,6 +561,7 @@ If the median cardinality is 5 employees per manager, then, the employee table m
 <li class="toctree-l2"><a class="reference internal" href="#data-generator-app">Data Generator App</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model-definition">Model Definition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#schema-definition">Schema Definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-collaboration">Class Collaboration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">Synthetic Data Tool Components</a></li>
@@ -390,7 +604,7 @@ If the median cardinality is 5 employees per manager, then, the employee table m
       &#169;2024, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

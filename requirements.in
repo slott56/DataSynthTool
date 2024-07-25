@@ -1,11 +1,2 @@
-pip-tools
-jupyterlab
 pydantic >= 2
 jsonschema
-sphinx
-sphinxcontrib-plantuml
-tox
-pytest
-pytest-cov
-ruff
-pyright

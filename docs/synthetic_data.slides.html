@@ -7440,7 +7440,7 @@ main {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Synthetic-Data">Synthetic Data<a class="anchor-link" href="#Synthetic-Data">¶</a></h1><p>Not focused Generative Adversarial Networks (although that's possible)</p>
+<h1 id="Synthetic-Data">Synthetic Data<a class="anchor-link" href="#Synthetic-Data">¶</a></h1><p>Not focused on Generative Adversarial Networks (although that's possible)</p>
 <p>Focused on Database, ETL, and data analytics</p>
 <p>Steven Lott</p>
 </div>
@@ -7466,8 +7466,8 @@ main {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Agenda">Agenda<a class="anchor-link" href="#Agenda">¶</a></h1><ol>
-<li><p>What do you mean "Synthetic"?</p>
-<p>Isn't that kind of a silly distinction?</p>
+<li><p>What do you mean "Synthetic Data"?</p>
+<p>Isn't "synthetic" a silly distinction?</p>
 </li>
 <li><p>Why bother?</p>
 </li>
@@ -7506,7 +7506,7 @@ main {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Test-Cases">Test Cases<a class="anchor-link" href="#Test-Cases">¶</a></h2><p>Usually have made-up (synthetic) data.</p>
+<h2 id="Test-Cases">Test Cases<a class="anchor-link" href="#Test-Cases">¶</a></h2><p>Test cases use made-up (synthetic) data.</p>
 </div>
 </div>
 </div>
@@ -7550,8 +7550,8 @@ main {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="But...">But...<a class="anchor-link" href="#But...">¶</a></h2><p>Using Sentinels and Mocks isn't very compelling.</p>
-<p>It tells us the implementation does specific steps.</p>
+<h2 id="But...">But...<a class="anchor-link" href="#But...">¶</a></h2><p>Using <code>Sentinel</code> and <code>Mock</code> isn't very compelling.</p>
+<p>It tells us the implementation does some specific steps.</p>
 <p>But does it tell us the implementation will get the right answer?</p>
 <p>(Hint: Not really.)</p>
 </div>
@@ -8202,7 +8202,7 @@ oVoIIYQQqoUQQkgV8P8BnIm2qaqveTkAAAAASUVORK5CYII=
 </li>
 <li><p>One -- maybe two -- of each.</p>
 </li>
-<li><p>Lovingly hand-crafted <code>INSERT</code> statements.</p>
+<li><p>Lovingly hand-craft the <code>INSERT</code> statements.</p>
 </li>
 </ul>
 </div>
@@ -8267,6 +8267,7 @@ oVoIIYQQqoUQQkgV8P8BnIm2qaqveTkAAAAASUVORK5CYII=
 <li><p>Data Generation</p>
 </li>
 </ul>
+<p>See <a href="https://github.com/slott56/DataSynthTool">https://github.com/slott56/DataSynthTool</a></p>
 </div>
 </div>
 </div>
@@ -8296,8 +8297,8 @@ oVoIIYQQqoUQQkgV8P8BnIm2qaqveTkAAAAASUVORK5CYII=
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Starting-Point----Design">Starting Point -- Design<a class="anchor-link" href="#Starting-Point----Design">¶</a></h3><p>PlantUML to sketch the data model.</p>
-<p>Draws diagrams.</p>
+<h3 id="Starting-Point----Design">Starting Point -- Design<a class="anchor-link" href="#Starting-Point----Design">¶</a></h3><p>Use PlantUML to sketch the data model.</p>
+<p>It draws diagrams.</p>
 <pre><code class="language-plantuml">plantuml
 @startuml
 class Employee {
@@ -8605,7 +8606,7 @@ Integer None None [] {'sql': {'foreignKey': 'Manager.id'}}
 <div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">SQLSchema</span><span class="p">(</span><span class="n">Manager</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">SQLSchema</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8617,14 +8618,15 @@ Integer None None [] {'sql': {'foreignKey': 'Manager.id'}}
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[13], line 1</span>
-<span class="ansi-green-fg">----&gt; 1</span> SQLSchema(Manager)
-
-<span class="ansi-red-fg">NameError</span>: name 'Manager' is not defined</pre>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>CREATE IF NOT EXISTS TABLE Employee (
+  id INTEGER,
+  name STRING,
+  hire_date STRING,
+  velocity NUMBER,
+  manager INTEGER,
+)
+</pre>
 </div>
 </div>
 </div>

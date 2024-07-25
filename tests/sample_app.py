@@ -19,7 +19,9 @@ def main():
     s.add(Employee, 100)
     s.add(Manager, 10)
 
-    with open(Path("data/employee.csv"), "w", newline="") as output:
+    with open(
+        Path("data/employee.csv"), "w", newline=""
+    ) as output:
         writer = csv.DictWriter(
             output,
             fieldnames=list(Employee.model_fields.keys()),
@@ -28,7 +30,9 @@ def main():
             print(row)
             writer.writerow(row.dict())
 
-    with open(Path("data/manager.csv"), "w", newline="") as output:
+    with open(
+        Path("data/manager.csv"), "w", newline=""
+    ) as output:
         writer = csv.DictWriter(
             output, fieldnames=list(Manager.model_fields.keys())
         )

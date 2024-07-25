@@ -36,6 +36,7 @@
  <a href="#_"><strong>_</strong></a>
  | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
+ | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
@@ -45,30 +46,19 @@
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  
 </div>
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="components.html#synthdata.base.Synthesizer.__call__">__call__() (synthdata.base.Synthesizer method)</a>
+      <li><a href="components.html#synthdata.base.BaseModelSynthesizer.__init__">__init__() (synthdata.base.BaseModelSynthesizer method)</a>
 
       <ul>
-        <li><a href="components.html#synthdata.synths.SynthesizeDate.__call__">(synthdata.synths.SynthesizeDate method)</a>
+        <li><a href="components.html#synthdata.base.DataIter.__init__">(synthdata.base.DataIter method)</a>
 </li>
-        <li><a href="components.html#synthdata.synths.SynthesizeFloat.__call__">(synthdata.synths.SynthesizeFloat method)</a>
+        <li><a href="components.html#synthdata.base.Independent.__init__">(synthdata.base.Independent method)</a>
 </li>
-        <li><a href="components.html#synthdata.synths.SynthesizeInteger.__call__">(synthdata.synths.SynthesizeInteger method)</a>
-</li>
-        <li><a href="components.html#synthdata.synths.SynthesizeName.__call__">(synthdata.synths.SynthesizeName method)</a>
-</li>
-        <li><a href="components.html#synthdata.synths.SynthesizeReference.__call__">(synthdata.synths.SynthesizeReference method)</a>
-</li>
-        <li><a href="components.html#synthdata.synths.SynthesizeString.__call__">(synthdata.synths.SynthesizeString method)</a>
-</li>
-      </ul></li>
-      <li><a href="components.html#synthdata.base.Independent.__init__">__init__() (synthdata.base.Independent method)</a>
-
-      <ul>
         <li><a href="components.html#synthdata.base.ModelIter.__init__">(synthdata.base.ModelIter method)</a>
 </li>
         <li><a href="components.html#synthdata.base.ModelSynthesizer.__init__">(synthdata.base.ModelSynthesizer method)</a>
@@ -82,14 +72,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="components.html#synthdata.base.Synthesizer.__iter__">__iter__() (synthdata.base.Synthesizer method)</a>
+      <li><a href="components.html#synthdata.base.DataIter.__next__">__next__() (synthdata.base.DataIter method)</a>
 </li>
-      <li><a href="components.html#synthdata.base.ModelIter.__next__">__next__() (synthdata.base.ModelIter method)</a>
-
-      <ul>
-        <li><a href="components.html#synthdata.base.Synthesizer.__next__">(synthdata.base.Synthesizer method)</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -104,7 +88,23 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="components.html#synthdata.base.BaseModelSynthesizer">BaseModelSynthesizer (class in synthdata.base)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="components.html#synthdata.base.Behavior">Behavior (class in synthdata.base)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="components.html#synthdata.base.SchemaSynthesizer.data">data() (synthdata.base.SchemaSynthesizer method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="components.html#synthdata.base.DataIter">DataIter (class in synthdata.base)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -121,7 +121,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="components.html#synthdata.base.ModelSynthesizer.explicit_rule">explicit_rule() (synthdata.base.ModelSynthesizer method)</a>
+      <li><a href="components.html#synthdata.base.BaseModelSynthesizer.explicit_rule">explicit_rule() (synthdata.base.BaseModelSynthesizer method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -147,12 +147,20 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="components.html#synthdata.base.Independent">Independent (class in synthdata.base)</a>
 </li>
-      <li><a href="components.html#synthdata.base.Behavior.iterator">iterator() (synthdata.base.Behavior method)</a>
+      <li><a href="components.html#synthdata.base.Synthesizer.initialize">initialize() (synthdata.base.Synthesizer method)</a>
 
       <ul>
-        <li><a href="components.html#synthdata.base.Independent.iterator">(synthdata.base.Independent method)</a>
+        <li><a href="components.html#synthdata.synths.SynthesizeDate.initialize">(synthdata.synths.SynthesizeDate method)</a>
 </li>
-        <li><a href="components.html#synthdata.base.Pooled.iterator">(synthdata.base.Pooled method)</a>
+        <li><a href="components.html#synthdata.synths.SynthesizeFloat.initialize">(synthdata.synths.SynthesizeFloat method)</a>
+</li>
+        <li><a href="components.html#synthdata.synths.SynthesizeInteger.initialize">(synthdata.synths.SynthesizeInteger method)</a>
+</li>
+        <li><a href="components.html#synthdata.synths.SynthesizeNone.initialize">(synthdata.synths.SynthesizeNone method)</a>
+</li>
+        <li><a href="components.html#synthdata.synths.SynthesizeNumber.initialize">(synthdata.synths.SynthesizeNumber method)</a>
+</li>
+        <li><a href="components.html#synthdata.synths.SynthesizeString.initialize">(synthdata.synths.SynthesizeString method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -161,7 +169,7 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="components.html#synthdata.base.ModelSynthesizer.make_field_synth">make_field_synth() (synthdata.base.ModelSynthesizer method)</a>
+      <li><a href="components.html#synthdata.base.BaseModelSynthesizer.make_field_synth">make_field_synth() (synthdata.base.BaseModelSynthesizer method)</a>
 </li>
       <li><a href="components.html#synthdata.synths.SynthesizeDate.match">match() (synthdata.synths.SynthesizeDate class method)</a>
 
@@ -177,7 +185,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="components.html#synthdata.base.ModelSynthesizer.match_rule">match_rule() (synthdata.base.ModelSynthesizer method)</a>
+      <li><a href="components.html#synthdata.base.BaseModelSynthesizer.match_rule">match_rule() (synthdata.base.BaseModelSynthesizer method)</a>
 </li>
       <li><a href="components.html#synthdata.base.ModelIter">ModelIter (class in synthdata.base)</a>
 </li>
@@ -205,7 +213,13 @@
 </li>
         <li><a href="components.html#synthdata.base.Pooled.next">(synthdata.base.Pooled method)</a>
 </li>
+        <li><a href="components.html#synthdata.base.Synthesizer.next">(synthdata.base.Synthesizer method)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="components.html#synthdata.base.Synthesizer.noise_gen">noise_gen() (synthdata.base.Synthesizer method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -214,22 +228,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="components.html#synthdata.base.Pooled">Pooled (class in synthdata.base)</a>
 </li>
-      <li><a href="components.html#synthdata.base.Synthesizer.prepare">prepare() (synthdata.base.Synthesizer method)</a>
-
-      <ul>
-        <li><a href="components.html#synthdata.synths.SynthesizeDate.prepare">(synthdata.synths.SynthesizeDate method)</a>
-</li>
-        <li><a href="components.html#synthdata.synths.SynthesizeFloat.prepare">(synthdata.synths.SynthesizeFloat method)</a>
-</li>
-        <li><a href="components.html#synthdata.synths.SynthesizeInteger.prepare">(synthdata.synths.SynthesizeInteger method)</a>
-</li>
-        <li><a href="components.html#synthdata.synths.SynthesizeNumber.prepare">(synthdata.synths.SynthesizeNumber method)</a>
-</li>
-        <li><a href="components.html#synthdata.synths.SynthesizeReference.prepare">(synthdata.synths.SynthesizeReference method)</a>
-</li>
-        <li><a href="components.html#synthdata.synths.SynthesizeString.prepare">(synthdata.synths.SynthesizeString method)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="install.html#index-0">PYTHONPATH</a>
@@ -250,9 +248,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="components.html#synthdata.base.SchemaSynthesizer">SchemaSynthesizer (class in synthdata.base)</a>
 </li>
-      <li><a href="components.html#synthdata.base.ModelSynthesizer.sql_rule">sql_rule() (synthdata.base.ModelSynthesizer method)</a>
+      <li><a href="components.html#synthdata.base.BaseModelSynthesizer.sql_rule">sql_rule() (synthdata.base.BaseModelSynthesizer method)</a>
 </li>
-      <li><a href="components.html#synthdata.base.synth_class_iter">synth_class_iter() (in module synthdata.base)</a>
+      <li><a href="components.html#synthdata.base.synth_name_map">synth_name_map() (in module synthdata.base)</a>
 </li>
       <li>
     synthdata.base
@@ -278,14 +276,36 @@
 </li>
       <li><a href="components.html#synthdata.synths.SynthesizeName">SynthesizeName (class in synthdata.synths)</a>
 </li>
+      <li><a href="components.html#synthdata.synths.SynthesizeNone">SynthesizeNone (class in synthdata.synths)</a>
+</li>
       <li><a href="components.html#synthdata.synths.SynthesizeNumber">SynthesizeNumber (class in synthdata.synths)</a>
 </li>
       <li><a href="components.html#synthdata.base.Synthesizer">Synthesizer (class in synthdata.base)</a>
 </li>
-      <li><a href="components.html#synthdata.synths.SynthesizeReference">SynthesizeReference (class in synthdata.synths)</a>
-</li>
       <li><a href="components.html#synthdata.synths.SynthesizeString">SynthesizeString (class in synthdata.synths)</a>
 </li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="components.html#synthdata.base.Synthesizer.value_gen">value_gen() (synthdata.base.Synthesizer method)</a>
+
+      <ul>
+        <li><a href="components.html#synthdata.synths.SynthesizeDate.value_gen">(synthdata.synths.SynthesizeDate method)</a>
+</li>
+        <li><a href="components.html#synthdata.synths.SynthesizeFloat.value_gen">(synthdata.synths.SynthesizeFloat method)</a>
+</li>
+        <li><a href="components.html#synthdata.synths.SynthesizeInteger.value_gen">(synthdata.synths.SynthesizeInteger method)</a>
+</li>
+        <li><a href="components.html#synthdata.synths.SynthesizeName.value_gen">(synthdata.synths.SynthesizeName method)</a>
+</li>
+        <li><a href="components.html#synthdata.synths.SynthesizeNone.value_gen">(synthdata.synths.SynthesizeNone method)</a>
+</li>
+        <li><a href="components.html#synthdata.synths.SynthesizeString.value_gen">(synthdata.synths.SynthesizeString method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -295,7 +315,7 @@
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">Synthetic Data Tools</a></h1>
 
@@ -351,7 +371,7 @@
       &#169;2024, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
     </div>
