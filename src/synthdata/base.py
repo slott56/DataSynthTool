@@ -146,6 +146,7 @@ class Pooled(Behavior):
     def __init__(self, synth: "Synthesizer") -> None:
         super().__init__(synth)
         assert self.synth.model.rows is not None, f"no target rows for {self.synth.model}"
+        self.pool_iter: Iterator[Any]
 
     def prepare(self):
         self.fill()
@@ -167,13 +168,19 @@ class Pooled(Behavior):
             self.count += 1
         self.pool = list(unique_pool)
         random.shuffle(self.pool)
+        self.pool_iter = iter(self.pool)
 
     def next(self) -> Any:
         """
         In the event of using ``next(synth_instance)``,
         the :py:meth:`synthdata.base.Synthesizer.__next__` picks a value at random from the pool using this.
         """
-        return random.choice(self.pool)
+        try:
+            return next(self.pool_iter)
+        except StopIteration:
+            random.shuffle(self.pool)
+            self.pool_iter = iter(self.pool)
+            return next(self.pool_iter)
 
 
 type NoiseGen = Callable[[int | None], Any | None]
@@ -714,6 +721,7 @@ class SchemaSynthesizer:
     def __init__(self) -> None:
         self.schema = {}
         self.references = []
+        self.prepared = False
 
     def add(self, model_class: type[BaseModel], rows: int | None = None) -> None:
         """
@@ -734,9 +742,9 @@ class SchemaSynthesizer:
         ]
         self.references.extend(references)
 
-    def _prepare(self) -> None:
+    def _resolve(self) -> None:
         """
-        Schema preparation prior to creating any rows.
+        Resolve references among classes in the schema.
         """
         while self.references:
             model, field, model_ref, field_ref = self.references.pop()
@@ -747,9 +755,24 @@ class SchemaSynthesizer:
                 print(f"{model_ref} not in {self.schema.keys()}")
                 raise KeyError(f"can't resolve {model} {field} ref to {model_ref}.{field_ref}")
             field.source = target
-        # For Pooled synthesizers, this will populate the pools.
+            self.prepare()
+
+    def prepare(self) -> None:
+        """
+        For Pooled synthesizers, this will populate the pools.
+        Once.
+        After that, it does nothing.
+        """
+        if self.prepared:
+            return
+        self.prepared = True
         for model, model_synth in self.schema.items():
             model_synth._prepare()
+
+    def reset(self) -> None:
+        """Reset the synthesizers to repopulate pools."""
+        self.prepared = False
+        self.prepare()
 
     def rows(self, model_class: type[BaseModel]) -> Iterator[BaseModel]:
         """
@@ -759,7 +782,8 @@ class SchemaSynthesizer:
         :raises KeyError: if the FK reference (``"Model.field"``) cannot be found.
         :raises ValueError: if the FK reference is not a Pooled synthesizer.
         """
-        self._prepare()
+        self._resolve()
+        self.prepare()
         model = self.schema[model_class.__name__]
         return model.model_iter(noise=0.0)
 
@@ -768,6 +792,7 @@ class SchemaSynthesizer:
         Returns an iterator for potential :py:class:`synthdata.synth.SynthesizeModel` instances.
         Noise is injected and the values may not be valid.
         """
-        self._prepare()
+        self._resolve()
+        self.prepare()
         model = self.schema[model_class.__name__]
         return model.data_iter(noise=noise)

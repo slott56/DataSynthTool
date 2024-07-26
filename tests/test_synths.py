@@ -133,7 +133,7 @@ def test_syth_float(seeded_random, mock_model):
 def test_synth_date(seeded_random, mock_model):
     g5 = SynthesizeDate(mock_model, Employee.model_fields["hire_date"])
     assert g5.next() == datetime.datetime(
-        2071, 7, 13, 20, 16, 4, 252645, tzinfo=datetime.timezone.utc
+        2071, 7, 13, 14, 47, 30, 697324, tzinfo=datetime.timezone.utc
     )
 
     assert g5.noise_gen() is None

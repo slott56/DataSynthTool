@@ -227,9 +227,17 @@ class SynthesizeDate(SynthesizeNumber):
         self.min_value = self.get_meta(Ge, attrgetter("ge"))
         self.max_value = self.get_meta(Le, attrgetter("le"))
         if self.min_value is None:
-            self.min_value = datetime.datetime(1970, 1, 1)
+            self.min_value = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+        else:
+            if self.min_value.tzinfo is None:
+                # Ugh. It was local time!
+                self.min_value = self.min_value.astimezone(datetime.timezone.utc)
         if self.max_value is None:
-            self.max_value = datetime.datetime(2099, 12, 31)
+            self.max_value = datetime.datetime(2099, 12, 31, tzinfo=datetime.timezone.utc)
+        else:
+            if self.max_value.tzinfo is None:
+                # Ugh. It was local time!
+                self.max_value = self.max_value.astimezone(datetime.timezone.utc)
         self.dist_name = self.json_schema_extra.get("distribution", self.default_distribution)
 
         self.min_date = self.min_value.timestamp()

@@ -164,10 +164,10 @@ def test_model_data(seeded_random):
 
     row = next(iter(m))
     assert row == Employee(
-        id=1625792787,
-        name="Osjoruxxdoczuzrenktu",
-        hire_date=datetime.datetime(2037, 11, 1, 15, 10, 35, 703425, tzinfo=datetime.timezone.utc),
-        velocity=11.463785114761471,
+        id=2592983555,
+        name="Rosjoruxxdoczuzrenktunpfzpd",
+        hire_date=datetime.datetime(2032, 4, 30, 2, 17, 3, 359625, tzinfo=datetime.timezone.utc),
+        velocity=12.336979706209183,
         manager=1,
     )
 
@@ -187,17 +187,17 @@ def test_schema(seeded_random):
 
     e_0 = next(employee_iter)
     assert e_0 == Employee(
-        id=2479708607,
-        name="Iupkdyrosjoru",
-        hire_date=datetime.datetime(2087, 8, 4, 19, 28, 16, 659266, tzinfo=datetime.timezone.utc),
-        velocity=13.44483045681685,
+        id=3701002945,
+        name="Mokiupk",
+        hire_date=datetime.datetime(2057, 7, 17, 21, 24, 55, 558971, tzinfo=datetime.timezone.utc),
+        velocity=12.809854665970944,
         manager=398340369,
     )
 
     manager_iter = s.rows(Manager)
     m_0 = next(manager_iter)
     print(m_0)
-    assert m_0 == Manager(id=3224995600, employee_id=284277889, department_id="5[!}}Ba")
+    assert m_0 == Manager(id=3529615275, employee_id=2479708607, department_id="C)<i|I<")
 
 
 def test_noisy_dataiter(seeded_random):
