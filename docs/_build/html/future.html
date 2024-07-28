@@ -33,6 +33,8 @@
             
   <section id="future-directions">
 <h1>Future Directions<a class="headerlink" href="#future-directions" title="Link to this heading">¶</a></h1>
+<section id="strategic">
+<h2>Strategic<a class="headerlink" href="#strategic" title="Link to this heading">¶</a></h2>
 <p>See <a class="reference internal" href="containers.html#containers-model"><span class="std std-ref">Model Definition</span></a> for a list of features.</p>
 <ul>
 <li><p>Additional string formats and patterns.</p></li>
@@ -52,6 +54,59 @@ This leads to a <code class="docutils literal notranslate"><span class="pre">Uni
 </ul>
 </li>
 </ul>
+</section>
+<section id="tactical">
+<h2>Tactical<a class="headerlink" href="#tactical" title="Link to this heading">¶</a></h2>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Reduce reliance on the Pydantic <code class="docutils literal notranslate"><span class="pre">FieldInfo</span></code> and annotation classes.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="components.html#id1"><em>original entry</em></a> is located in /Users/slott/github/local/DataSynthTool/docs/../src/synthdata/base.py:docstring of synthdata.base, line 48.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Handle recursive structures here.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="components.html#id2"><em>original entry</em></a> is located in /Users/slott/github/local/DataSynthTool/docs/../src/synthdata/base.py:docstring of synthdata.base.DataIter, line 7.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Handle recursive structures here.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="components.html#id3"><em>original entry</em></a> is located in /Users/slott/github/local/DataSynthTool/docs/../src/synthdata/base.py:docstring of synthdata.base.BaseModelSynthesizer, line 6.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Handle nested models.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="components.html#id4"><em>original entry</em></a> is located in /Users/slott/github/local/DataSynthTool/docs/../src/synthdata/base.py:docstring of synthdata.base.BaseModelSynthesizer.__init__, line 11.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>FK’s may have optionality rules.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">SynthesizeReference</span></code> instance may need a subdomain distribution.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="components.html#id5"><em>original entry</em></a> is located in /Users/slott/github/local/DataSynthTool/docs/../src/synthdata/base.py:docstring of synthdata.base.BaseModelSynthesizer.sql_rule, line 4.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>What kind of error for invalid values?</p>
+<p>For now, we simply create an Independent behavior. Perhaps a ValueError is better?
+Or a wanrning?</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="components.html#id6"><em>original entry</em></a> is located in /Users/slott/github/local/DataSynthTool/docs/../src/synthdata/base.py:docstring of synthdata.base.BaseModelSynthesizer.sql_rule, line 8.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Confirm all alternatives defined in <code class="docutils literal notranslate"><span class="pre">synth_class_map</span></code>.</p>
+<p>A None in  <code class="docutils literal notranslate"><span class="pre">synth_class_map</span></code> means an unknown synth, possibly buried in a Union.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="components.html#id7"><em>original entry</em></a> is located in /Users/slott/github/local/DataSynthTool/docs/../src/synthdata/base.py:docstring of synthdata.base.BaseModelSynthesizer.make_field_synth, line 16.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>Improve the name generator with better pattern (and anti-pattern).</p>
+<p>Options</p>
+<ol class="arabic simple">
+<li><p>get first names from census data; get digraph frequency from last names.</p></li>
+<li><p>Use NLTK digraph frequencies to generate plausible English-like works.</p></li>
+</ol>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="components.html#id8"><em>original entry</em></a> is located in /Users/slott/github/local/DataSynthTool/docs/../src/synthdata/synths.py:docstring of synthdata.synths.SynthesizeName, line 3.)</p>
+</section>
 </section>
 
 
@@ -79,7 +134,11 @@ This leads to a <code class="docutils literal notranslate"><span class="pre">Uni
 <li class="toctree-l1"><a class="reference internal" href="containers.html">Containers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">Synthetic Data Tool Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Future Directions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Future Directions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#strategic">Strategic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tactical">Tactical</a></li>
+</ul>
+</li>
 </ul>
 
 <div class="relations">

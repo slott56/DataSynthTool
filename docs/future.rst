@@ -2,6 +2,9 @@
 Future Directions
 ##################
 
+Strategic
+=========
+
 See :ref:`containers.model` for a list of features.
 
 
@@ -24,3 +27,8 @@ See :ref:`containers.model` for a list of features.
     -   A domain-specific null is a coded value, like social security number ``999-99-9999`` that indicates some sort of missing or not-applicable value.
         This is also a complicated ``Union``.
         This leads to a ``Union[Annnotated[int, ...], Annotated[Literal[n], ...], etc.]`` with probabilities for each choice.
+
+Tactical
+========
+
+..  todolist::

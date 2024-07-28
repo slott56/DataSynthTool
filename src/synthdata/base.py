@@ -111,6 +111,12 @@ class Behavior(abc.ABC):
         """
         ...
 
+    def choice(self) -> Any:
+        """
+        Returns a value chosen from a pool, only overridden by the Pooled subclass.
+        """
+        return self.next()
+
 
 class Independent(Behavior):
     """
@@ -182,6 +188,12 @@ class Pooled(Behavior):
             self.pool_iter = iter(self.pool)
             return next(self.pool_iter)
 
+    def choice(self) -> Any:
+        """
+        Returns a value chosen from a pool.
+        """
+        return random.choice(self.pool)
+
 
 type NoiseGen = Callable[[int | None], Any | None]
 
@@ -229,6 +241,10 @@ class Synthesizer(abc.ABC):
     def next(self) -> Any:
         """Get the next value from the :py:class:`synthdata.base.Behavior` **Strategy**."""
         return self.behavior.next()
+
+    def choice(self) -> Any:
+        """Get an arbitrary value from a :py:class:`synthdata.base.Pooled` **Strategy**."""
+        return self.behavior.choice()
 
     def prepare(self) -> None:
         self.behavior.prepare()
@@ -305,17 +321,21 @@ class SynthesizeUnion(Synthesizer):
             name: synth_class(model, field, behavior) for name, synth_class in sources.items()
         }
         super().__init__(model, field, behavior)
+        self.subdomain: dict[Synthesizer, float]
 
     def initialize(self):
         """
         Use jsonschema "subdomain"  to determine distribution.
         If two sources, one of which is SynthesizeNone and no subdomain in jsonschema, then 95% data, 5% None.
+
+        ..  todo:: Validate the subdomain specificatiion.
+
+            It must be a {string: number, ...} dictionary and the strings are in the sources map.
         """
 
         if "subdomain" in self.json_schema_extra:
             subdomain_spec: dict[str, int]
             subdomain_spec = self.json_schema_extra["subdomain"]
-            # TODO: Assert it's a {string: number, ...} dictionary and the strings are in the sources map.
             # Map string names of types to the synthesizer instances in self.sources.
             self.subdomain = {self.sources[name]: fq for name, fq in subdomain_spec.items()}
 
@@ -324,24 +344,20 @@ class SynthesizeUnion(Synthesizer):
             none_source: list[Synthesizer] = list(filter(synth_none, self.sources.values()))
             other_source: list[Synthesizer] = list(filterfalse(synth_none, self.sources.values()))
             if len(other_source) == 1 and len(none_source) == 1:
-                # One and None? and no subdomain with details.
-                self.subdomain = {none_source[0]: 1, other_source[0]: 19}
+                # One and None? no subdomain_spec? default is 5% noise.
+                self.subdomain = {none_source[0]: 5, other_source[0]: 95}
             else:
-                # Default distribution is uniform.
-                self.subdomain = {s: 1 for s in self.sources}
-
-        self.domain_synth: list[Synthesizer] = [
-            cast(Synthesizer, synth)
-            for synth, number in self.subdomain.items()
-            for _ in range(number)
-        ]
+                # Without a subdomain spec, the default distribution is uniform.
+                self.subdomain = {s: 1 for s in self.sources.values()}
 
     def value_gen(self, sequence: int | None = None) -> Any:
         """
         Pick a domain. Then pick a value from the domain.
         """
-        synth = random.choice(self.domain_synth)
-        return synth.value_gen(sequence)
+        synth = random.choices(
+            list(self.subdomain.keys()), weights=list(self.subdomain.values()), k=1
+        )[0]
+        return cast(Synthesizer, synth).value_gen(sequence)
 
     def noise_gen(self, sequence: int | None = None) -> Any:
         """
@@ -350,8 +366,10 @@ class SynthesizeUnion(Synthesizer):
         Ideally, pick a domain and pick a value not in the domain.
         If the domains are reasonably disjoint, this **could** work.
         """
-        synth = random.choice(self.domain_synth)
-        return synth.noise_gen(sequence)
+        synth = random.choices(
+            list(self.subdomain.keys()), weights=list(self.subdomain.values()), k=1
+        )[0]
+        return cast(Synthesizer, synth).noise_gen(sequence)
 
 
 class SynthesizeReference(Synthesizer):
@@ -388,12 +406,23 @@ class SynthesizeReference(Synthesizer):
         self.source: Synthesizer | None = None
 
     def value_gen(self, sequence: int | None = None) -> Any:
-        """Generates a value by extracting it from a source synthensizer."""
+        """Generates a value by extracting it from a source synthensizer.
+
+        ..  important:
+
+            There are several candidate distributions.
+
+            Using self.source.next() will "deal" fairly from the pool.
+
+            Using self.source.choice() will make random choices from the pool.
+
+            Other options are possible for non-uniform distributions.
+        """
         if self.source is None:
             raise ValueError(
                 f"source {self.model_ref}.{self.field_ref} not resolved"
             )  # pragma: no cover
-        return self.source.next()
+        return self.source.choice()
 
     def noise_gen(self, sequence: int | None = None) -> Any:
         """Pick a value NOT in the key pool."""
@@ -561,6 +590,11 @@ class BaseModelSynthesizer(ModelSynthesizer):
         ..  todo:: FK's may have optionality rules.
 
             The ``SynthesizeReference`` instance may need a subdomain distribution.
+
+        ..  todo:: What kind of error for invalid values?
+
+            For now, we simply create an Independent behavior. Perhaps a ValueError is better?
+            Or a wanrning?
         """
         json_schema_extra = cast(dict[str, Any], field.json_schema_extra or {})
 
@@ -654,6 +688,10 @@ class BaseModelSynthesizer(ModelSynthesizer):
             This is done by evaluating :py:meth:`synthdata.base.Synthesizer.match` for all subclasses
             of :py:class:`synthdata.base.Synthesizer` from most specific subclass to most general superclass.
             First match is assigned.
+
+            ..  todo:: Confirm all alternatives defined in ``synth_class_map``.
+
+                A None in  ``synth_class_map`` means an unknown synth, possibly buried in a Union.
         """
         # SQL PK defines behavior.
         # SQL FK defines behavior and class.
@@ -669,7 +707,6 @@ class BaseModelSynthesizer(ModelSynthesizer):
         if not synth_class_map:
             _, synth_class_map = self.match_rule(field)
 
-        # TODO: Confirm all alternatives defined in synth_class_map? No None values?
         if not synth_class_map or behavior is None:
             raise TypeError(f"no synth class matches {field=}")  # pragma: no cover
         elif len(synth_class_map) > 1:

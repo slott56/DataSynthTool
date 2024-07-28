@@ -36,3 +36,7 @@ html_static_path = ["_static"]
 # -- Options for Autodoc -------------------------------------------------
 
 autodoc_member_order = 'bysource'
+
+# -- Options for Todo -------------------------------------------------
+
+todo_include_todos = True

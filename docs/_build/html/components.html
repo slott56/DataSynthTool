@@ -110,6 +110,12 @@ tailors the behavior of a <a class="reference internal" href="#synthdata.base.Sy
 <dd><p>Returns a next value for a Synthesizer.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="synthdata.base.Behavior.choice">
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#synthdata.base.Behavior.choice" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a value chosen from a pool, only overridden by the Pooled subclass.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -161,6 +167,12 @@ This is used by the model’s _prepare() method.</p>
 the <code class="xref py py-meth docutils literal notranslate"><span class="pre">synthdata.base.Synthesizer.__next__()</span></code> picks a value at random from the pool using this.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="synthdata.base.Pooled.choice">
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#synthdata.base.Pooled.choice" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a value chosen from a pool.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -186,6 +198,12 @@ pool of unique values.</p>
 <dt class="sig sig-object py" id="synthdata.base.Synthesizer.next">
 <span class="sig-name descname"><span class="pre">next</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#synthdata.base.Synthesizer.next" title="Link to this definition">¶</a></dt>
 <dd><p>Get the next value from the <a class="reference internal" href="#synthdata.base.Behavior" title="synthdata.base.Behavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">synthdata.base.Behavior</span></code></a> <strong>Strategy</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synthdata.base.Synthesizer.choice">
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#synthdata.base.Synthesizer.choice" title="Link to this definition">¶</a></dt>
+<dd><p>Get an arbitrary value from a <a class="reference internal" href="#synthdata.base.Pooled" title="synthdata.base.Pooled"><code class="xref py py-class docutils literal notranslate"><span class="pre">synthdata.base.Pooled</span></code></a> <strong>Strategy</strong>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -218,6 +236,10 @@ Otherwise, the data is a short, random string of punctuation characters, unlikel
 
 </dd></dl>
 
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>Reduce reliance on the Pydantic <code class="docutils literal notranslate"><span class="pre">FieldInfo</span></code> and annotation classes.</p>
+</div>
 </section>
 <section id="model-and-schema-synthesizers">
 <h3>Model and Schema Synthesizers<a class="headerlink" href="#model-and-schema-synthesizers" title="Link to this heading">¶</a></h3>
@@ -239,6 +261,10 @@ This permits FK references to PK pools.</p>
 This will create dictionaries suitable for creating Pydantic <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> instances.</p>
 <p>A trash injector can replace good data with invalid values – bad numbers, bad strings, None, etc.
 The resulting object will <strong>not</strong> be a valid Pydantic <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> instance.</p>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>Handle recursive structures here.</p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="synthdata.base.DataIter.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#synthdata.base.ModelSynthesizer" title="synthdata.base.ModelSynthesizer"><span class="pre">ModelSynthesizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#synthdata.base.DataIter.__init__" title="Link to this definition">¶</a></dt>
@@ -295,6 +321,10 @@ Note that non-zero noise values may lead to Pydantic validation errors.</p></li>
 <dd><p>Synthesizes instances of Pydantic <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>.</p>
 <p>This expects a flat collection of atomic fields.
 In that way, it’s biased to work with SQL-oriented schema, which tend to be flat.</p>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>Handle recursive structures here.</p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="synthdata.base.BaseModelSynthesizer.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">BaseModel</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#synthdata.base.BaseModelSynthesizer.__init__" title="Link to this definition">¶</a></dt>
@@ -305,6 +335,10 @@ generally because of SQL primary keys.</p>
 The <a class="reference internal" href="#synthdata.base.BaseModelSynthesizer.make_field_synth" title="synthdata.base.BaseModelSynthesizer.make_field_synth"><code class="xref py py-meth docutils literal notranslate"><span class="pre">make_field_synth()</span></code></a> method is exposed so subclasses can extend the processing.</p>
 <p>The general use case is the use the <code class="docutils literal notranslate"><span class="pre">fields</span></code> attribute, which is a mapping
 of field names to <a class="reference internal" href="#synthdata.base.Synthesizer" title="synthdata.base.Synthesizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">synthdata.base.Synthesizer</span></code></a> instances.</p>
+<div class="admonition-todo admonition" id="id4">
+<p class="admonition-title">Todo</p>
+<p>Handle nested models.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -312,6 +346,17 @@ of field names to <a class="reference internal" href="#synthdata.base.Synthesize
 <span class="sig-name descname"><span class="pre">sql_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FieldInfo</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#synthdata.base.Behavior" title="synthdata.base.Behavior"><span class="pre">Behavior</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#synthdata.base.Synthesizer" title="synthdata.base.Synthesizer"><span class="pre">Synthesizer</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#synthdata.base.BaseModelSynthesizer.sql_rule" title="Link to this definition">¶</a></dt>
 <dd><p>Rule 0 – PK’s are pooled, FK’s are references to PK pools.
 This also means <code class="docutils literal notranslate"><span class="pre">&quot;sql&quot;:</span> <span class="pre">{'key':</span> <span class="pre">&quot;foreign&quot;,</span> <span class="pre">...</span></code> will get a reference synthesizer.</p>
+<div class="admonition-todo admonition" id="id5">
+<p class="admonition-title">Todo</p>
+<p>FK’s may have optionality rules.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">SynthesizeReference</span></code> instance may need a subdomain distribution.</p>
+</div>
+<div class="admonition-todo admonition" id="id6">
+<p class="admonition-title">Todo</p>
+<p>What kind of error for invalid values?</p>
+<p>For now, we simply create an Independent behavior. Perhaps a ValueError is better?
+Or a wanrning?</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -348,7 +393,7 @@ Further details may be required to get the frequency of null values correct.</p>
 <dt class="sig sig-object py" id="synthdata.base.BaseModelSynthesizer.make_field_synth">
 <span class="sig-name descname"><span class="pre">make_field_synth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FieldInfo</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#synthdata.base.Synthesizer" title="synthdata.base.Synthesizer"><span class="pre">Synthesizer</span></a></span></span><a class="headerlink" href="#synthdata.base.BaseModelSynthesizer.make_field_synth" title="Link to this definition">¶</a></dt>
 <dd><p>Given a specific field, apply the matching rules to locate a synthesizer.</p>
-<ul class="simple">
+<ul>
 <li><p><strong>Rule 0</strong>. PK’s lead to a <a class="reference internal" href="#synthdata.base.Pooled" title="synthdata.base.Pooled"><code class="xref py py-class docutils literal notranslate"><span class="pre">synthdata.base.Pooled</span></code></a> <strong>Strategy</strong>.
 FK’s will be references to PK pools.
 Otherwise, synthesizers are <a class="reference internal" href="#synthdata.base.Independent" title="synthdata.base.Independent"><code class="xref py py-class docutils literal notranslate"><span class="pre">synthdata.base.Independent</span></code></a>.</p></li>
@@ -358,7 +403,13 @@ Example: <code class="docutils literal notranslate"><span class="pre">{&quot;syn
 <li><p><strong>Rule 2</strong>. Deduce synthesizer from annotation class and <code class="docutils literal notranslate"><span class="pre">json_schema_extra</span></code> properties.
 This is done by evaluating <code class="xref py py-meth docutils literal notranslate"><span class="pre">synthdata.base.Synthesizer.match()</span></code> for all subclasses
 of <a class="reference internal" href="#synthdata.base.Synthesizer" title="synthdata.base.Synthesizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">synthdata.base.Synthesizer</span></code></a> from most specific subclass to most general superclass.
-First match is assigned.</p></li>
+First match is assigned.</p>
+<div class="admonition-todo admonition" id="id7">
+<p class="admonition-title">Todo</p>
+<p>Confirm all alternatives defined in <code class="docutils literal notranslate"><span class="pre">synth_class_map</span></code>.</p>
+<p>A None in  <code class="docutils literal notranslate"><span class="pre">synth_class_map</span></code> means an unknown synth, possibly buried in a Union.</p>
+</div>
+</li>
 </ul>
 </dd></dl>
 
@@ -395,6 +446,20 @@ First match is assigned.</p></li>
 <dd class="field-odd"><p><strong>KeyError</strong> – if the FK reference (<code class="docutils literal notranslate"><span class="pre">&quot;Model.field&quot;</span></code>) cannot be parsed.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synthdata.base.SchemaSynthesizer.prepare">
+<span class="sig-name descname"><span class="pre">prepare</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#synthdata.base.SchemaSynthesizer.prepare" title="Link to this definition">¶</a></dt>
+<dd><p>For Pooled synthesizers, this will populate the pools.
+Once.
+After that, it does nothing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synthdata.base.SchemaSynthesizer.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#synthdata.base.SchemaSynthesizer.reset" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the synthesizers to repopulate pools.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -488,6 +553,15 @@ Otherwise, the data is a short, random string of punctuation characters, unlikel
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">synthdata.synths.</span></span><span class="sig-name descname"><span class="pre">SynthesizeName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model:</span> <span class="pre">~synthdata.base.ModelSynthesizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field:</span> <span class="pre">~pydantic.fields.FieldInfo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">behavior:</span> <span class="pre">type[~synthdata.base.Behavior]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'synthdata.base.Independent'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#synthdata.synths.SynthesizeName" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#synthdata.synths.SynthesizeString" title="synthdata.synths.SynthesizeString"><code class="xref py py-class docutils literal notranslate"><span class="pre">SynthesizeString</span></code></a></p>
 <p>Synthesizer Name-like strings. This title-cases a random string.</p>
+<div class="admonition-todo admonition" id="id8">
+<p class="admonition-title">Todo</p>
+<p>Improve the name generator with better pattern (and anti-pattern).</p>
+<p>Options</p>
+<ol class="arabic simple">
+<li><p>get first names from census data; get digraph frequency from last names.</p></li>
+<li><p>Use NLTK digraph frequencies to generate plausible English-like works.</p></li>
+</ol>
+</div>
 <p>Default min_length is 3 to avoid 1-char names.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="synthdata.synths.SynthesizeName.value_gen">

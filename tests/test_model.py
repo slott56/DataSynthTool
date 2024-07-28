@@ -191,13 +191,13 @@ def test_schema(seeded_random):
         name="Mokiupk",
         hire_date=datetime.datetime(2057, 7, 17, 21, 24, 55, 558971, tzinfo=datetime.timezone.utc),
         velocity=12.809854665970944,
-        manager=398340369,
+        manager=415393687,
     )
 
     manager_iter = s.rows(Manager)
     m_0 = next(manager_iter)
     print(m_0)
-    assert m_0 == Manager(id=3529615275, employee_id=2479708607, department_id="C)<i|I<")
+    assert m_0 == Manager(id=3332894265, employee_id=2479708607, department_id="i|I<")
 
 
 def test_noisy_dataiter(seeded_random):

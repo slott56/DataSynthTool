@@ -142,7 +142,7 @@ def test_synth_date(seeded_random, mock_model):
 def test_synth_reference(seeded_random, mock_model):
     g6 = SynthesizeReference(mock_model, Employee.model_fields["manager"])
     g6.source = MagicMock(
-        next=Mock(side_effect=[sentinel.POOL_VALUE]), noise_gen=Mock(side_effect=[sentinel.NOISE])
+        choice=Mock(side_effect=[sentinel.POOL_VALUE]), noise_gen=Mock(side_effect=[sentinel.NOISE])
     )
     assert g6.next() == sentinel.POOL_VALUE
 
@@ -157,7 +157,7 @@ def test_synth_union_default(seeded_random, mock_model):
     )
     assert g8.next() == "Vrpo"
     names = list(g8.next() for _ in range(50))
-    assert sum(1 for n in names if n is None) == 3
+    assert sum(1 for n in names if n is None) == 1
 
 
 def test_synth_union_subdomain(seeded_random, mock_model):
@@ -177,7 +177,7 @@ def test_synth_union_subdomain(seeded_random, mock_model):
     )
     assert g8.next() is None
     names = list(g8.next() for _ in range(50))
-    assert sum(1 for n in names if n is None) == 19
+    assert sum(1 for n in names if n is None) == 24
 
 
 RULE_2_MATCHES = [
